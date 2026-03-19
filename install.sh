@@ -111,10 +111,34 @@ usage() {
     echo "  ./install.sh --check-only          # Just detect hardware"
 }
 
+is_valid_profile() {
+    case "$1" in
+        verify|python|rust|browser|iot|docker|field|full) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
 # ─── Argument parsing ─────────────────────────────────────────────────
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --profile)   PROFILE="$2"; shift 2 ;;
+        --profile)
+            if [[ $# -lt 2 || "$2" == --* ]]; then
+                echo "Missing value for --profile"
+                usage
+                exit 1
+            fi
+            PROFILE="$2"
+            shift 2
+            ;;
+        --profile=*)
+            PROFILE="${1#*=}"
+            if [ -z "$PROFILE" ]; then
+                echo "Missing value for --profile"
+                usage
+                exit 1
+            fi
+            shift
+            ;;
         --check-only) CHECK_ONLY=true; shift ;;
         --verbose)   VERBOSE=true; shift ;;
         --yes)       SKIP_CONFIRM=true; shift ;;
@@ -122,6 +146,12 @@ while [[ $# -gt 0 ]]; do
         *)           echo "Unknown option: $1"; usage; exit 1 ;;
     esac
 done
+
+if [ -n "$PROFILE" ] && ! is_valid_profile "$PROFILE"; then
+    echo "Unknown profile: ${PROFILE}"
+    echo "Valid profiles: verify, python, rust, browser, iot, docker, field, full"
+    exit 1
+fi
 
 # ─── Initialize log ──────────────────────────────────────────────────
 echo "WiFi-DensePose install log - $(date -u +%Y-%m-%dT%H:%M:%SZ)" > "${INSTALL_LOG}"
@@ -327,7 +357,11 @@ detect_toolchains() {
     if command -v gcc &>/dev/null || command -v cc &>/dev/null; then
         HAS_GCC=true
     fi
-    if pkg-config --exists openblas 2>/dev/null || [ -f /usr/lib/libopenblas.so ] || [ -f /usr/lib/x86_64-linux-gnu/libopenblas.so ] || brew list openblas &>/dev/null 2>&1; then
+    local brew_has_openblas=false
+    if command -v brew &>/dev/null && brew list openblas &>/dev/null 2>&1; then
+        brew_has_openblas=true
+    fi
+    if pkg-config --exists openblas 2>/dev/null || [ -f /usr/lib/libopenblas.so ] || [ -f /usr/lib/x86_64-linux-gnu/libopenblas.so ] || $brew_has_openblas; then
         HAS_OPENBLAS=true
         ok "OpenBLAS: found"
     elif $HAS_RUST; then
@@ -535,15 +569,20 @@ recommend_profile() {
     fi
 
     echo ""
-    read -rp "  Select profile [1-${idx}] (default: ${recommended}): " choice
-
-    if [ -z "$choice" ]; then
+    if $SKIP_CONFIRM; then
         PROFILE="$recommended"
-    elif [ "$choice" -ge 1 ] 2>/dev/null && [ "$choice" -le "$idx" ]; then
-        PROFILE="${profile_names[$((choice - 1))]}"
+        info "--yes provided: auto-selected recommended profile '${PROFILE}'"
     else
-        echo -e "  ${RED}Invalid choice. Using ${recommended}.${RESET}"
-        PROFILE="$recommended"
+        read -rp "  Select profile [1-${idx}] (default: ${recommended}): " choice
+
+        if [ -z "$choice" ]; then
+            PROFILE="$recommended"
+        elif [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "$idx" ]; then
+            PROFILE="${profile_names[$((choice - 1))]}"
+        else
+            echo -e "  ${RED}Invalid choice. Using ${recommended}.${RESET}"
+            PROFILE="$recommended"
+        fi
     fi
 
     echo ""
@@ -636,20 +675,20 @@ install_additional_python_packages() {
     fi
     
     # Determine pip install command based on OS
-    local PIP_INSTALL=""
+    local -a PIP_INSTALL_CMD=("$PYTHON_CMD" -m pip install)
     if [[ "$OS_TYPE" == "linux" ]]; then
-        PIP_INSTALL="$PYTHON_CMD -m pip install --break-system-packages"
+        if "$PYTHON_CMD" -m pip help install 2>/dev/null | grep -q -- "--break-system-packages"; then
+            PIP_INSTALL_CMD+=("--break-system-packages")
+        fi
     elif [[ "$OS_TYPE" == "macos" ]]; then
-        PIP_INSTALL="$PYTHON_CMD -m pip install --user --break-system-packages"
-    else
-        PIP_INSTALL="$PYTHON_CMD -m pip install"
+        PIP_INSTALL_CMD+=("--user")
     fi
     
     local INSTALLED_ANY=false
     
     if ! $PYTHON_CMD -m pip show requests >/dev/null 2>&1; then
         echo "  Installing requests..."
-        if $PIP_INSTALL requests 2>&1 | tail -2; then
+        if "${PIP_INSTALL_CMD[@]}" requests 2>&1 | tail -2; then
             INSTALLED_ANY=true
         else
             warn "Failed to install 'requests' (continuing)"
@@ -658,7 +697,7 @@ install_additional_python_packages() {
     
     if ! $PYTHON_CMD -m pip show cryptography >/dev/null 2>&1; then
         echo "  Installing cryptography..."
-        if $PIP_INSTALL cryptography 2>&1 | tail -2; then
+        if "${PIP_INSTALL_CMD[@]}" cryptography 2>&1 | tail -2; then
             INSTALLED_ANY=true
         else
             warn "Failed to install 'cryptography' (continuing)"
@@ -667,7 +706,7 @@ install_additional_python_packages() {
     
     if ! $PYTHON_CMD -m pip show pycryptodome >/dev/null 2>&1; then
         echo "  Installing pycryptodome..."
-        if $PIP_INSTALL pycryptodome 2>&1 | tail -2; then
+        if "${PIP_INSTALL_CMD[@]}" pycryptodome 2>&1 | tail -2; then
             INSTALLED_ANY=true
         else
             warn "Failed to install 'pycryptodome' (continuing)"
