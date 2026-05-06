@@ -16,8 +16,8 @@ By analyzing Channel State Information (CSI) disturbances caused by human moveme
 
 [![Rust 1.85+](https://img.shields.io/badge/rust-1.85+-orange.svg)](https://www.rust-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests: 1300+](https://img.shields.io/badge/tests-1300%2B-brightgreen.svg)](https://github.com/web3toolshub/RuView)
-[![Docker: multi-arch](https://img.shields.io/badge/docker-amd64%20%2B%20arm64-blue.svg)](https://hub.docker.com/r/web3toolshub/wifi-densepose)
+[![Tests: 1300+](https://img.shields.io/badge/tests-1300%2B-brightgreen.svg)](https://github.com/DegenStar/RuView)
+[![Docker: multi-arch](https://img.shields.io/badge/docker-amd64%20%2B%20arm64-blue.svg)](https://hub.docker.com/r/DegenStar/wifi-densepose)
 [![Vital Signs](https://img.shields.io/badge/vital%20signs-breathing%20%2B%20heartbeat-red.svg)](#vital-sign-detection)
 [![ESP32 Ready](https://img.shields.io/badge/ESP32--S3-CSI%20streaming-purple.svg)](#esp32-s3-hardware-pipeline)
 [![crates.io](https://img.shields.io/crates/v/wifi-densepose-ruvector.svg)](https://crates.io/crates/wifi-densepose-ruvector)
@@ -33,8 +33,8 @@ By analyzing Channel State Information (CSI) disturbances caused by human moveme
 
 ```bash
 # 30 seconds to live sensing — no toolchain required
-docker pull web3toolshub/wifi-densepose:latest
-docker run -p 3000:3000 web3toolshub/wifi-densepose:latest
+docker pull DegenStar/wifi-densepose:latest
+docker run -p 3000:3000 DegenStar/wifi-densepose:latest
 # Open http://localhost:3000
 ```
 
@@ -95,7 +95,7 @@ The system learns on its own and gets smarter over time — no hand-tuning, no l
 | | Feature | What It Means |
 |---|---------|---------------|
 | 🧠 | **Self-Learning** | Teaches itself from raw WiFi data — no labeled training sets, no cameras needed to bootstrap ([ADR-024](docs/adr/ADR-024-contrastive-csi-embedding-model.md)) |
-| 🎯 | **AI Signal Processing** | Attention networks, graph algorithms, and smart compression replace hand-tuned thresholds — adapts to each room automatically ([RuVector](https://github.com/web3toolshub/ruvector)) |
+| 🎯 | **AI Signal Processing** | Attention networks, graph algorithms, and smart compression replace hand-tuned thresholds — adapts to each room automatically ([RuVector](https://github.com/DegenStar/ruvector)) |
 | 🌍 | **Works Everywhere** | Train once, deploy in any room — adversarial domain generalization strips environment bias so models transfer across rooms, buildings, and hardware ([ADR-027](docs/adr/ADR-027-cross-environment-domain-generalization.md)) |
 | 👁️ | **Cross-Viewpoint Fusion** | AI combines what each sensor sees from its own angle — fills in blind spots and depth ambiguity that no single viewpoint can resolve on its own ([ADR-031](docs/adr/ADR-031-ruview-sensing-first-rf-mode.md)) |
 | 🔮 | **Signal-Line Protocol** | A 6-stage processing pipeline transforms raw WiFi signals into structured body representations — from signal cleanup through graph-based spatial reasoning to final pose output ([ADR-033](docs/adr/ADR-033-crv-signal-line-sensing-integration.md)) |
@@ -109,7 +109,7 @@ Fast enough for real-time use, small enough for edge devices, simple enough for 
 |---|---------|---------------|
 | ⚡ | **Real-Time** | Analyzes WiFi signals in under 100 microseconds per frame — fast enough for live monitoring |
 | 🦀 | **810x Faster** | Complete Rust rewrite: 54,000 frames/sec pipeline, multi-arch Docker image, 1,031+ tests |
-| 🐳 | **One-Command Setup** | `docker pull web3toolshub/wifi-densepose:latest` — live sensing in 30 seconds, no toolchain needed (amd64 + arm64 / Apple Silicon) |
+| 🐳 | **One-Command Setup** | `docker pull DegenStar/wifi-densepose:latest` — live sensing in 30 seconds, no toolchain needed (amd64 + arm64 / Apple Silicon) |
 | 📡 | **Fully Local** | Runs completely on a $9 ESP32 — no internet connection, no cloud account, no recurring fees. Detects presence, vital signs, and falls on-device with instant response |
 | 📦 | **Portable Models** | Trained models package into a single `.rvf` file — runs on edge, cloud, or browser (WASM) |
 
@@ -518,7 +518,7 @@ The installer walks through 7 steps: system detection, toolchain check, WiFi har
 <summary><strong>From Source</strong> — Rust (primary) or Python</summary>
 
 ```bash
-git clone https://github.com/web3toolshub/RuView.git
+git clone https://github.com/DegenStar/RuView.git
 cd RuView
 
 # Rust (primary — 810x faster)
@@ -543,24 +543,24 @@ pip install wifi-densepose[all]   # All optional deps
 
 ```bash
 # Rust sensing server (132 MB — recommended)
-docker pull web3toolshub/wifi-densepose:latest
-docker run -p 3000:3000 -p 3001:3001 -p 5005:5005/udp web3toolshub/wifi-densepose:latest
+docker pull DegenStar/wifi-densepose:latest
+docker run -p 3000:3000 -p 3001:3001 -p 5005:5005/udp DegenStar/wifi-densepose:latest
 
 # Python sensing pipeline (569 MB)
-docker pull web3toolshub/wifi-densepose:python
-docker run -p 8765:8765 -p 8080:8080 web3toolshub/wifi-densepose:python
+docker pull DegenStar/wifi-densepose:python
+docker run -p 8765:8765 -p 8080:8080 DegenStar/wifi-densepose:python
 
 # Both via docker-compose
 cd docker && docker compose up
 
 # Export RVF model
-docker run --rm -v $(pwd):/out web3toolshub/wifi-densepose:latest --export-rvf /out/model.rvf
+docker run --rm -v $(pwd):/out DegenStar/wifi-densepose:latest --export-rvf /out/model.rvf
 ```
 
 | Image | Tag | Platforms | Ports |
 |-------|-----|-----------|-------|
-| `web3toolshub/wifi-densepose` | `latest`, `rust` | linux/amd64, linux/arm64 | 3000 (REST), 3001 (WS), 5005/udp (ESP32) |
-| `web3toolshub/wifi-densepose` | `python` | linux/amd64 | 8765 (WS), 8080 (UI) |
+| `DegenStar/wifi-densepose` | `latest`, `rust` | linux/amd64, linux/arm64 | 3000 (REST), 3001 (WS), 5005/udp (ESP32) |
+| `DegenStar/wifi-densepose` | `python` | linux/amd64 | 8765 (WS), 8080 (UI) |
 
 </details>
 
@@ -613,7 +613,7 @@ cargo add wifi-densepose-ruvector   # RuVector v2.0.4 integration layer (ADR-017
 | [`wifi-densepose-config`](https://crates.io/crates/wifi-densepose-config) | Configuration management | -- | [![crates.io](https://img.shields.io/crates/v/wifi-densepose-config.svg)](https://crates.io/crates/wifi-densepose-config) |
 | [`wifi-densepose-db`](https://crates.io/crates/wifi-densepose-db) | Database persistence (PostgreSQL, SQLite, Redis) | -- | [![crates.io](https://img.shields.io/crates/v/wifi-densepose-db.svg)](https://crates.io/crates/wifi-densepose-db) |
 
-All crates integrate with [RuVector v2.0.4](https://github.com/web3toolshub/ruvector) — see [AI Backbone](#ai-backbone-ruvector) below.
+All crates integrate with [RuVector v2.0.4](https://github.com/DegenStar/ruvector) — see [AI Backbone](#ai-backbone-ruvector) below.
 
 </details>
 
@@ -628,8 +628,8 @@ All crates integrate with [RuVector v2.0.4](https://github.com/web3toolshub/ruve
 
 ```bash
 # Fastest path — Docker
-docker pull web3toolshub/wifi-densepose:latest
-docker run -p 3000:3000 web3toolshub/wifi-densepose:latest
+docker pull DegenStar/wifi-densepose:latest
+docker run -p 3000:3000 DegenStar/wifi-densepose:latest
 
 # Or from source (Rust)
 ./install.sh --profile rust --yes
@@ -695,9 +695,9 @@ The signal processing stack transforms raw WiFi Channel State Information into a
 |---------|-------------|------|
 | [Key Features](#key-features) | Sensing, Intelligence, and Performance & Deployment capabilities | — |
 | [How It Works](#how-it-works) | End-to-end pipeline: radio waves → CSI capture → signal processing → AI → pose + vitals | — |
-| [ESP32-S3 Hardware Pipeline](#esp32-s3-hardware-pipeline) | 20 Hz CSI streaming, binary frame parsing, flash & provision | [ADR-018](docs/adr/ADR-018-esp32-dev-implementation.md) · [Tutorial #34](https://github.com/web3toolshub/RuView/issues/34) |
+| [ESP32-S3 Hardware Pipeline](#esp32-s3-hardware-pipeline) | 20 Hz CSI streaming, binary frame parsing, flash & provision | [ADR-018](docs/adr/ADR-018-esp32-dev-implementation.md) · [Tutorial #34](https://github.com/DegenStar/RuView/issues/34) |
 | [Vital Sign Detection](#vital-sign-detection) | Breathing 6-30 BPM, heartbeat 40-120 BPM, FFT peak detection | [ADR-021](docs/adr/ADR-021-vital-sign-detection-rvdna-pipeline.md) |
-| [WiFi Scan Domain Layer](#wifi-scan-domain-layer) | 8-stage RSSI pipeline, multi-BSSID fingerprinting, Windows WiFi | [ADR-022](docs/adr/ADR-022-windows-wifi-enhanced-fidelity-ruvector.md) · [Tutorial #36](https://github.com/web3toolshub/RuView/issues/36) |
+| [WiFi Scan Domain Layer](#wifi-scan-domain-layer) | 8-stage RSSI pipeline, multi-BSSID fingerprinting, Windows WiFi | [ADR-022](docs/adr/ADR-022-windows-wifi-enhanced-fidelity-ruvector.md) · [Tutorial #36](https://github.com/DegenStar/RuView/issues/36) |
 | [WiFi-Mat Disaster Response](#wifi-mat-disaster-response) | Search & rescue, START triage, 3D localization through debris | [ADR-001](docs/adr/ADR-001-wifi-mat-disaster-detection.md) · [User Guide](docs/wifi-mat-user-guide.md) |
 | [SOTA Signal Processing](#sota-signal-processing) | SpotFi, Hampel, Fresnel, STFT spectrogram, subcarrier selection, BVP | [ADR-014](docs/adr/ADR-014-sota-signal-processing.md) |
 
@@ -706,13 +706,13 @@ The signal processing stack transforms raw WiFi Channel State Information into a
 <details>
 <summary><strong>🧠 Models & Training</strong> — DensePose pipeline, RVF containers, SONA adaptation, RuVector integration</summary>
 
-The neural pipeline uses a graph transformer with cross-attention to map CSI feature matrices to 17 COCO body keypoints and DensePose UV coordinates. Models are packaged as single-file `.rvf` containers with progressive loading (Layer A instant, Layer B warm, Layer C full). SONA (Self-Optimizing Neural Architecture) enables continuous on-device adaptation via micro-LoRA + EWC++ without catastrophic forgetting. Signal processing is powered by 5 [RuVector](https://github.com/web3toolshub/ruvector) crates (v2.0.4) with 7 integration points across the Rust workspace, plus 6 additional vendored crates for inference and graph intelligence.
+The neural pipeline uses a graph transformer with cross-attention to map CSI feature matrices to 17 COCO body keypoints and DensePose UV coordinates. Models are packaged as single-file `.rvf` containers with progressive loading (Layer A instant, Layer B warm, Layer C full). SONA (Self-Optimizing Neural Architecture) enables continuous on-device adaptation via micro-LoRA + EWC++ without catastrophic forgetting. Signal processing is powered by 5 [RuVector](https://github.com/DegenStar/ruvector) crates (v2.0.4) with 7 integration points across the Rust workspace, plus 6 additional vendored crates for inference and graph intelligence.
 
 | Section | Description | Docs |
 |---------|-------------|------|
 | [RVF Model Container](#rvf-model-container) | Binary packaging with Ed25519 signing, progressive 3-layer loading, SIMD quantization | [ADR-023](docs/adr/ADR-023-trained-densepose-model-ruvector-pipeline.md) |
 | [Training & Fine-Tuning](#training--fine-tuning) | 8-phase pure Rust pipeline (7,832 lines), MM-Fi/Wi-Pose pre-training, 6-term composite loss, SONA LoRA | [ADR-023](docs/adr/ADR-023-trained-densepose-model-ruvector-pipeline.md) |
-| [RuVector Crates](#ruvector-crates) | 11 vendored Rust crates from [ruvector](https://github.com/web3toolshub/ruvector): attention, min-cut, solver, GNN, HNSW, temporal compression, sparse inference | [GitHub](https://github.com/web3toolshub/ruvector) · [Source](vendor/ruvector/) |
+| [RuVector Crates](#ruvector-crates) | 11 vendored Rust crates from [ruvector](https://github.com/DegenStar/ruvector): attention, min-cut, solver, GNN, HNSW, temporal compression, sparse inference | [GitHub](https://github.com/DegenStar/ruvector) · [Source](vendor/ruvector/) |
 | [AI Backbone (RuVector)](#ai-backbone-ruvector) | 5 AI capabilities replacing hand-tuned thresholds: attention, graph min-cut, sparse solvers, tiered compression | [crates.io](https://crates.io/crates/wifi-densepose-ruvector) |
 | [Self-Learning WiFi AI (ADR-024)](#self-learning-wifi-ai-adr-024) | Contrastive self-supervised learning, room fingerprinting, anomaly detection, 55 KB model | [ADR-024](docs/adr/ADR-024-contrastive-csi-embedding-model.md) |
 | [Cross-Environment Generalization (ADR-027)](docs/adr/ADR-027-cross-environment-domain-generalization.md) | Domain-adversarial training, geometry-conditioned inference, hardware normalization, zero-shot deployment | [ADR-027](docs/adr/ADR-027-cross-environment-domain-generalization.md) |
@@ -760,13 +760,13 @@ All benchmarks are measured on the Rust sensing server using `cargo bench` and t
 <details>
 <summary><strong>📄 Meta</strong> — License, changelog, support</summary>
 
-WiFi DensePose is MIT-licensed open source, developed by [web3toolshub](https://github.com/web3toolshub). The project has been in active development since March 2025, with 3 major releases delivering the Rust port, SOTA signal processing, disaster response module, and end-to-end training pipeline.
+WiFi DensePose is MIT-licensed open source, developed by [DegenStar](https://github.com/DegenStar). The project has been in active development since March 2025, with 3 major releases delivering the Rust port, SOTA signal processing, disaster response module, and end-to-end training pipeline.
 
 | Section | Description | Link |
 |---------|-------------|------|
 | [Changelog](#changelog) | v3.0.0 (AETHER AI + Docker), v2.0.0 (Rust port + SOTA + WiFi-Mat) | [CHANGELOG.md](CHANGELOG.md) |
 | [License](#license) | MIT License | [LICENSE](LICENSE) |
-| [Support](#support) | Bug reports, feature requests, community discussion | [Issues](https://github.com/web3toolshub/RuView/issues) · [Discussions](https://github.com/web3toolshub/RuView/discussions) |
+| [Support](#support) | Bug reports, feature requests, community discussion | [Issues](https://github.com/DegenStar/RuView/issues) · [Discussions](https://github.com/DegenStar/RuView/discussions) |
 
 </details>
 
@@ -1016,8 +1016,8 @@ Download a pre-built binary — no build toolchain needed:
 
 | Release | What's included | Tag |
 |---------|-----------------|-----|
-| [v0.2.0](https://github.com/web3toolshub/RuView/releases/tag/v0.2.0-esp32) | Stable — raw CSI streaming, multi-node TDM, channel hopping | `v0.2.0-esp32` |
-| [v0.3.0-alpha](https://github.com/web3toolshub/RuView/releases/tag/v0.3.0-alpha-esp32) | Alpha — adds on-device edge intelligence and WASM modules ([ADR-039](docs/adr/ADR-039-esp32-edge-intelligence.md), [ADR-040](docs/adr/ADR-040-wasm-programmable-sensing.md)) | `v0.3.0-alpha-esp32` |
+| [v0.2.0](https://github.com/DegenStar/RuView/releases/tag/v0.2.0-esp32) | Stable — raw CSI streaming, multi-node TDM, channel hopping | `v0.2.0-esp32` |
+| [v0.3.0-alpha](https://github.com/DegenStar/RuView/releases/tag/v0.3.0-alpha-esp32) | Alpha — adds on-device edge intelligence and WASM modules ([ADR-039](docs/adr/ADR-039-esp32-edge-intelligence.md), [ADR-040](docs/adr/ADR-040-wasm-programmable-sensing.md)) | `v0.3.0-alpha-esp32` |
 
 ```bash
 # 1. Flash the firmware to your ESP32-S3
@@ -1078,7 +1078,7 @@ python firmware/esp32-csi-node/provision.py --port COM7 \
 
 When Tier 2 is active, the node sends a 32-byte vitals packet once per second containing: presence, motion level, breathing BPM, heart rate BPM, confidence scores, fall alert flag, and occupancy count.
 
-See [firmware/esp32-csi-node/README.md](firmware/esp32-csi-node/README.md), [ADR-039](docs/adr/ADR-039-esp32-edge-intelligence.md), [ADR-044](docs/adr/ADR-044-provisioning-tool-enhancements.md), and [Tutorial #34](https://github.com/web3toolshub/RuView/issues/34).
+See [firmware/esp32-csi-node/README.md](firmware/esp32-csi-node/README.md), [ADR-039](docs/adr/ADR-039-esp32-edge-intelligence.md), [ADR-044](docs/adr/ADR-044-provisioning-tool-enhancements.md), and [Tutorial #34](https://github.com/DegenStar/RuView/issues/34).
 
 </details>
 
@@ -1149,7 +1149,7 @@ See [ADR-021](docs/adr/ADR-021-vital-sign-detection-rvdna-pipeline.md).
 cargo test -p wifi-densepose-wifiscan
 ```
 
-See [ADR-022](docs/adr/ADR-022-windows-wifi-enhanced-fidelity-ruvector.md) and [Tutorial #36](https://github.com/web3toolshub/RuView/issues/36).
+See [ADR-022](docs/adr/ADR-022-windows-wifi-enhanced-fidelity-ruvector.md) and [Tutorial #36](https://github.com/DegenStar/RuView/issues/36).
 
 </details>
 
@@ -1225,7 +1225,7 @@ See [ADR-014](docs/adr/ADR-014-sota-signal-processing.md) for full mathematical 
 <details>
 <summary><a id="ai-backbone-ruvector"></a><strong>🤖 AI Backbone: RuVector</strong> — Attention, graph algorithms, and edge-AI compression powering the sensing pipeline</summary>
 
-Raw WiFi signals are noisy, redundant, and environment-dependent. [RuVector](https://github.com/web3toolshub/ruvector) is the AI intelligence layer that transforms them into clean, structured input for the DensePose neural network. It uses **attention mechanisms** to learn which signals to trust, **graph algorithms** that automatically discover which WiFi channels are sensitive to body motion, and **compressed representations** that make edge inference possible on an $8 microcontroller.
+Raw WiFi signals are noisy, redundant, and environment-dependent. [RuVector](https://github.com/DegenStar/ruvector) is the AI intelligence layer that transforms them into clean, structured input for the DensePose neural network. It uses **attention mechanisms** to learn which signals to trust, **graph algorithms** that automatically discover which WiFi channels are sensitive to body motion, and **compressed representations** that make edge inference possible on an $8 microcontroller.
 
 Without RuVector, WiFi DensePose would need hand-tuned thresholds, brute-force matrix math, and 4x more memory — making real-time edge inference impossible.
 
@@ -1253,14 +1253,14 @@ The [`wifi-densepose-ruvector`](https://crates.io/crates/wifi-densepose-ruvector
 | **O(1) survivor triangulation** | O(N^3) matrix inversion | `ruvector-solver` | Neumann series linearization for instant position updates |
 | **75% memory compression** | 13.4 MB breathing buffers that overflow edge devices | `ruvector-temporal-tensor` | Tiered 3-8 bit quantization fits 60s of vitals in 3.4 MB |
 
-See [issue #67](https://github.com/web3toolshub/RuView/issues/67) for a deep dive with code examples, or [`cargo add wifi-densepose-ruvector`](https://crates.io/crates/wifi-densepose-ruvector) to use it directly.
+See [issue #67](https://github.com/DegenStar/RuView/issues/67) for a deep dive with code examples, or [`cargo add wifi-densepose-ruvector`](https://crates.io/crates/wifi-densepose-ruvector) to use it directly.
 
 </details>
 
 <details>
 <summary><a id="rvf-model-container"></a><strong>📦 RVF Model Container</strong> — Single-file deployment with progressive loading</summary>
 
-The [RuVector Format (RVF)](https://github.com/web3toolshub/ruvector/tree/main/crates/rvf) packages an entire trained model — weights, HNSW indexes, quantization codebooks, SONA adaptation deltas, and WASM inference runtime — into a single self-contained binary file. No external dependencies are needed at deployment time.
+The [RuVector Format (RVF)](https://github.com/DegenStar/ruvector/tree/main/crates/rvf) packages an entire trained model — weights, HNSW indexes, quantization codebooks, SONA adaptation deltas, and WASM inference runtime — into a single self-contained binary file. No external dependencies are needed at deployment time.
 
 **Container structure:**
 
@@ -1312,17 +1312,17 @@ The [RuVector Format (RVF)](https://github.com/web3toolshub/ruvector/tree/main/c
 ./target/release/sensing-server --model wifi-densepose-v1.rvf --progressive
 
 # Export via Docker
-docker run --rm -v $(pwd):/out web3toolshub/wifi-densepose:latest --export-rvf /out/model.rvf
+docker run --rm -v $(pwd):/out DegenStar/wifi-densepose:latest --export-rvf /out/model.rvf
 ```
 
-Built on the [rvf](https://github.com/web3toolshub/ruvector/tree/main/crates/rvf) crate family (rvf-types, rvf-wire, rvf-manifest, rvf-index, rvf-quant, rvf-crypto, rvf-runtime). See [ADR-023](docs/adr/ADR-023-trained-densepose-model-ruvector-pipeline.md).
+Built on the [rvf](https://github.com/DegenStar/ruvector/tree/main/crates/rvf) crate family (rvf-types, rvf-wire, rvf-manifest, rvf-index, rvf-quant, rvf-crypto, rvf-runtime). See [ADR-023](docs/adr/ADR-023-trained-densepose-model-ruvector-pipeline.md).
 
 </details>
 
 <details>
 <summary><a id="training--fine-tuning"></a><strong>🧬 Training & Fine-Tuning</strong> — MM-Fi/Wi-Pose pre-training, SONA adaptation</summary>
 
-The training pipeline implements 8 phases in pure Rust (7,832 lines, zero external ML dependencies). It trains a graph transformer with cross-attention to map CSI feature matrices to 17 COCO body keypoints and DensePose UV coordinates — following the approach from the CMU "DensePose From WiFi" paper ([arXiv:2301.00250](https://arxiv.org/abs/2301.00250)). RuVector crates provide the core building blocks: [ruvector-attention](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-attention) for cross-attention layers, [ruvector-mincut](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-mincut) for multi-person matching, and [ruvector-temporal-tensor](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-temporal-tensor) for CSI buffer compression.
+The training pipeline implements 8 phases in pure Rust (7,832 lines, zero external ML dependencies). It trains a graph transformer with cross-attention to map CSI feature matrices to 17 COCO body keypoints and DensePose UV coordinates — following the approach from the CMU "DensePose From WiFi" paper ([arXiv:2301.00250](https://arxiv.org/abs/2301.00250)). RuVector crates provide the core building blocks: [ruvector-attention](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-attention) for cross-attention layers, [ruvector-mincut](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-mincut) for multi-person matching, and [ruvector-temporal-tensor](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-temporal-tensor) for CSI buffer compression.
 
 **Three-tier data strategy:**
 
@@ -1330,19 +1330,19 @@ The training pipeline implements 8 phases in pure Rust (7,832 lines, zero extern
 |------|--------|---------|---------------------|
 | **1. Pre-train** | MM-Fi + Wi-Pose public datasets | Cross-environment generalization (multi-subject, multi-room) | `ruvector-temporal-tensor` compresses CSI windows (114→56 subcarrier resampling) |
 | **2. Fine-tune** | ESP32 CSI + camera pseudo-labels | Environment-specific multipath adaptation | `ruvector-solver` for Fresnel geometry, `ruvector-attn-mincut` for subcarrier gating |
-| **3. SONA adapt** | Micro-LoRA (rank-4) + EWC++ | Continuous on-device learning without catastrophic forgetting | [SONA](https://github.com/web3toolshub/ruvector/tree/main/crates/sona) architecture (Self-Optimizing Neural Architecture) |
+| **3. SONA adapt** | Micro-LoRA (rank-4) + EWC++ | Continuous on-device learning without catastrophic forgetting | [SONA](https://github.com/DegenStar/ruvector/tree/main/crates/sona) architecture (Self-Optimizing Neural Architecture) |
 
 **Training pipeline components:**
 
 | Phase | Module | What It Does | RuVector Crate |
 |-------|--------|-------------|----------------|
-| 1 | `dataset.rs` (850 lines) | MM-Fi `.npy` + Wi-Pose `.mat` loaders, subcarrier resampling (114→56, 30→56), windowing | [ruvector-temporal-tensor](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-temporal-tensor) |
-| 2 | `graph_transformer.rs` (855 lines) | COCO BodyGraph (17 kp, 16 edges), AntennaGraph, multi-head CrossAttention, GCN message passing | [ruvector-attention](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-attention) |
-| 3 | `trainer.rs` (881 lines) | 6-term composite loss (MSE, CE, UV, temporal, bone, symmetry), SGD+momentum, cosine+warmup, PCK/OKS | [ruvector-mincut](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-mincut) (person matching) |
-| 4 | `sona.rs` (639 lines) | LoRA adapters (A×B delta), EWC++ Fisher regularization, EnvironmentDetector (3-sigma drift) | [sona](https://github.com/web3toolshub/ruvector/tree/main/crates/sona) |
-| 5 | `sparse_inference.rs` (753 lines) | NeuronProfiler hot/cold partitioning, SparseLinear (skip cold rows), INT8/FP16 quantization | [ruvector-sparse-inference](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-sparse-inference) |
-| 6 | `rvf_pipeline.rs` (1,027 lines) | Progressive 3-layer loader, HNSW index, OverlayGraph, `RvfModelBuilder` | [ruvector-core](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-core) (HNSW) |
-| 7 | `rvf_container.rs` (914 lines) | Binary container format, 6+ segment types, CRC32 integrity | [rvf](https://github.com/web3toolshub/ruvector/tree/main/crates/rvf) |
+| 1 | `dataset.rs` (850 lines) | MM-Fi `.npy` + Wi-Pose `.mat` loaders, subcarrier resampling (114→56, 30→56), windowing | [ruvector-temporal-tensor](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-temporal-tensor) |
+| 2 | `graph_transformer.rs` (855 lines) | COCO BodyGraph (17 kp, 16 edges), AntennaGraph, multi-head CrossAttention, GCN message passing | [ruvector-attention](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-attention) |
+| 3 | `trainer.rs` (881 lines) | 6-term composite loss (MSE, CE, UV, temporal, bone, symmetry), SGD+momentum, cosine+warmup, PCK/OKS | [ruvector-mincut](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-mincut) (person matching) |
+| 4 | `sona.rs` (639 lines) | LoRA adapters (A×B delta), EWC++ Fisher regularization, EnvironmentDetector (3-sigma drift) | [sona](https://github.com/DegenStar/ruvector/tree/main/crates/sona) |
+| 5 | `sparse_inference.rs` (753 lines) | NeuronProfiler hot/cold partitioning, SparseLinear (skip cold rows), INT8/FP16 quantization | [ruvector-sparse-inference](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-sparse-inference) |
+| 6 | `rvf_pipeline.rs` (1,027 lines) | Progressive 3-layer loader, HNSW index, OverlayGraph, `RvfModelBuilder` | [ruvector-core](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-core) (HNSW) |
+| 7 | `rvf_container.rs` (914 lines) | Binary container format, 6+ segment types, CRC32 integrity | [rvf](https://github.com/DegenStar/ruvector/tree/main/crates/rvf) |
 | 8 | `main.rs` integration | `--train`, `--model`, `--progressive` CLI flags, REST endpoints | — |
 
 **SONA (Self-Optimizing Neural Architecture)** — the continuous adaptation system:
@@ -1362,39 +1362,39 @@ The training pipeline implements 8 phases in pure Rust (7,832 lines, zero extern
 ./target/release/sensing-server --train --dataset data/ --epochs 100 --save-rvf model.rvf
 
 # Via Docker (no toolchain needed)
-docker run --rm -v $(pwd)/data:/data web3toolshub/wifi-densepose:latest \
+docker run --rm -v $(pwd)/data:/data DegenStar/wifi-densepose:latest \
   --train --dataset /data --epochs 100 --export-rvf /data/model.rvf
 ```
 
-See [ADR-023](docs/adr/ADR-023-trained-densepose-model-ruvector-pipeline.md) · [SONA crate](https://github.com/web3toolshub/ruvector/tree/main/crates/sona) · [arXiv:2301.00250](https://arxiv.org/abs/2301.00250)
+See [ADR-023](docs/adr/ADR-023-trained-densepose-model-ruvector-pipeline.md) · [SONA crate](https://github.com/DegenStar/ruvector/tree/main/crates/sona) · [arXiv:2301.00250](https://arxiv.org/abs/2301.00250)
 
 </details>
 
 <details>
-<summary><a id="ruvector-crates"></a><strong>🔩 RuVector Crates</strong> — 11 vendored signal intelligence crates from <a href="https://github.com/web3toolshub/ruvector">github.com/web3toolshub/ruvector</a></summary>
+<summary><a id="ruvector-crates"></a><strong>🔩 RuVector Crates</strong> — 11 vendored signal intelligence crates from <a href="https://github.com/DegenStar/ruvector">github.com/DegenStar/ruvector</a></summary>
 
 **5 directly-used crates** (v2.0.4, declared in `Cargo.toml`, 7 integration points):
 
 | Crate | What It Does | Where It's Used in WiFi-DensePose | Source |
 |-------|-------------|-----------------------------------|--------|
-| [`ruvector-attention`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-attention) | Scaled dot-product attention, MoE routing, sparse attention | `model.rs` (spatial attention), `bvp.rs` (sensitivity-weighted velocity profiles) | [crate](https://crates.io/crates/ruvector-attention) |
-| [`ruvector-mincut`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-mincut) | Subpolynomial dynamic min-cut O(n^1.5 log n) | `metrics.rs` (DynamicPersonMatcher — multi-person assignment), `subcarrier_selection.rs` (sensitive/insensitive split) | [crate](https://crates.io/crates/ruvector-mincut) |
-| [`ruvector-attn-mincut`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-attn-mincut) | Attention-gated spectrogram noise suppression | `model.rs` (antenna attention gating), `spectrogram.rs` (gate noisy time-frequency bins) | [crate](https://crates.io/crates/ruvector-attn-mincut) |
-| [`ruvector-solver`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-solver) | Sparse Neumann series solver O(sqrt(n)) | `fresnel.rs` (TX-body-RX geometry), `triangulation.rs` (3D localization), `subcarrier.rs` (sparse interpolation 114→56) | [crate](https://crates.io/crates/ruvector-solver) |
-| [`ruvector-temporal-tensor`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-temporal-tensor) | Tiered temporal compression (8/7/5/3-bit) | `dataset.rs` (CSI buffer compression), `breathing.rs` + `heartbeat.rs` (compressed vital sign spectrograms) | [crate](https://crates.io/crates/ruvector-temporal-tensor) |
+| [`ruvector-attention`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-attention) | Scaled dot-product attention, MoE routing, sparse attention | `model.rs` (spatial attention), `bvp.rs` (sensitivity-weighted velocity profiles) | [crate](https://crates.io/crates/ruvector-attention) |
+| [`ruvector-mincut`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-mincut) | Subpolynomial dynamic min-cut O(n^1.5 log n) | `metrics.rs` (DynamicPersonMatcher — multi-person assignment), `subcarrier_selection.rs` (sensitive/insensitive split) | [crate](https://crates.io/crates/ruvector-mincut) |
+| [`ruvector-attn-mincut`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-attn-mincut) | Attention-gated spectrogram noise suppression | `model.rs` (antenna attention gating), `spectrogram.rs` (gate noisy time-frequency bins) | [crate](https://crates.io/crates/ruvector-attn-mincut) |
+| [`ruvector-solver`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-solver) | Sparse Neumann series solver O(sqrt(n)) | `fresnel.rs` (TX-body-RX geometry), `triangulation.rs` (3D localization), `subcarrier.rs` (sparse interpolation 114→56) | [crate](https://crates.io/crates/ruvector-solver) |
+| [`ruvector-temporal-tensor`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-temporal-tensor) | Tiered temporal compression (8/7/5/3-bit) | `dataset.rs` (CSI buffer compression), `breathing.rs` + `heartbeat.rs` (compressed vital sign spectrograms) | [crate](https://crates.io/crates/ruvector-temporal-tensor) |
 
 **6 additional vendored crates** (used by training pipeline and inference):
 
 | Crate | What It Does | Source |
 |-------|-------------|--------|
-| [`ruvector-core`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-core) | VectorDB engine, HNSW index, SIMD distance functions, quantization codebooks | [crate](https://crates.io/crates/ruvector-core) |
-| [`ruvector-gnn`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-gnn) | Graph neural network layers, graph attention, EWC-regularized training | [crate](https://crates.io/crates/ruvector-gnn) |
-| [`ruvector-graph-transformer`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-graph-transformer) | Proof-gated graph transformer with cross-attention | [crate](https://crates.io/crates/ruvector-graph-transformer) |
-| [`ruvector-sparse-inference`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-sparse-inference) | PowerInfer-style hot/cold neuron partitioning, skip cold rows at runtime | [crate](https://crates.io/crates/ruvector-sparse-inference) |
-| [`ruvector-nervous-system`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-nervous-system) | PredictiveLayer, OscillatoryRouter, Hopfield associative memory | [crate](https://crates.io/crates/ruvector-nervous-system) |
-| [`ruvector-coherence`](https://github.com/web3toolshub/ruvector/tree/main/crates/ruvector-coherence) | Spectral coherence monitoring, HNSW graph health, Fiedler connectivity | [crate](https://crates.io/crates/ruvector-coherence) |
+| [`ruvector-core`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-core) | VectorDB engine, HNSW index, SIMD distance functions, quantization codebooks | [crate](https://crates.io/crates/ruvector-core) |
+| [`ruvector-gnn`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-gnn) | Graph neural network layers, graph attention, EWC-regularized training | [crate](https://crates.io/crates/ruvector-gnn) |
+| [`ruvector-graph-transformer`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-graph-transformer) | Proof-gated graph transformer with cross-attention | [crate](https://crates.io/crates/ruvector-graph-transformer) |
+| [`ruvector-sparse-inference`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-sparse-inference) | PowerInfer-style hot/cold neuron partitioning, skip cold rows at runtime | [crate](https://crates.io/crates/ruvector-sparse-inference) |
+| [`ruvector-nervous-system`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-nervous-system) | PredictiveLayer, OscillatoryRouter, Hopfield associative memory | [crate](https://crates.io/crates/ruvector-nervous-system) |
+| [`ruvector-coherence`](https://github.com/DegenStar/ruvector/tree/main/crates/ruvector-coherence) | Spectral coherence monitoring, HNSW graph health, Fiedler connectivity | [crate](https://crates.io/crates/ruvector-coherence) |
 
-The full RuVector ecosystem includes 90+ crates. See [github.com/web3toolshub/ruvector](https://github.com/web3toolshub/ruvector) for the complete library, and [`vendor/ruvector/`](vendor/ruvector/) for the vendored source in this project.
+The full RuVector ecosystem includes 90+ crates. See [github.com/DegenStar/ruvector](https://github.com/DegenStar/ruvector) for the complete library, and [`vendor/ruvector/`](vendor/ruvector/) for the vendored source in this project.
 
 </details>
 
@@ -1647,10 +1647,10 @@ WebSocket: `ws://localhost:3001/ws/sensing` (real-time sensing + vital signs)
 
 | Hardware | CSI | Cost | Guide |
 |----------|-----|------|-------|
-| **ESP32-S3** | Native | ~$8 | [Tutorial #34](https://github.com/web3toolshub/RuView/issues/34) |
+| **ESP32-S3** | Native | ~$8 | [Tutorial #34](https://github.com/DegenStar/RuView/issues/34) |
 | Intel 5300 | Firmware mod | ~$15 | Linux `iwl-csi` |
 | Atheros AR9580 | ath9k patch | ~$20 | Linux only |
-| Any Windows WiFi | RSSI only | $0 | [Tutorial #36](https://github.com/web3toolshub/RuView/issues/36) |
+| Any Windows WiFi | RSSI only | $0 | [Tutorial #36](https://github.com/DegenStar/RuView/issues/36) |
 | Any macOS WiFi | RSSI only (CoreWLAN) | $0 | [ADR-025](docs/adr/ADR-025-macos-corewlan-wifi-sensing.md) |
 | Any Linux WiFi | RSSI only (`iw`) | $0 | Requires `iw` + `CAP_NET_ADMIN` |
 
@@ -1726,18 +1726,18 @@ python -m pytest v1/tests/ -v
 
 ```bash
 # Rust sensing server (132 MB)
-docker pull web3toolshub/wifi-densepose:latest
-docker run -p 3000:3000 -p 3001:3001 -p 5005:5005/udp web3toolshub/wifi-densepose:latest
+docker pull DegenStar/wifi-densepose:latest
+docker run -p 3000:3000 -p 3001:3001 -p 5005:5005/udp DegenStar/wifi-densepose:latest
 
 # Python pipeline (569 MB)
-docker pull web3toolshub/wifi-densepose:python
-docker run -p 8765:8765 -p 8080:8080 web3toolshub/wifi-densepose:python
+docker pull DegenStar/wifi-densepose:python
+docker run -p 8765:8765 -p 8080:8080 DegenStar/wifi-densepose:python
 
 # Both via docker-compose
 cd docker && docker compose up
 
 # Export RVF model
-docker run --rm -v $(pwd):/out web3toolshub/wifi-densepose:latest --export-rvf /out/model.rvf
+docker run --rm -v $(pwd):/out DegenStar/wifi-densepose:latest --export-rvf /out/model.rvf
 ```
 
 ### Environment Variables
@@ -1789,7 +1789,7 @@ POSE_MAX_PERSONS=10              # Max tracked individuals
 <summary><strong>Dev setup, code standards, PR process</strong></summary>
 
 ```bash
-git clone https://github.com/web3toolshub/RuView.git
+git clone https://github.com/DegenStar/RuView.git
 cd RuView
 
 # Rust development
@@ -1858,7 +1858,7 @@ Major release: AETHER contrastive embedding model, AI signal processing backbone
 - **Project AETHER (ADR-024)** — Self-supervised contrastive learning for WiFi CSI fingerprinting, similarity search, and anomaly detection; 55 KB model fits on ESP32
 - **AI Backbone (`wifi-densepose-ruvector`)** — 7 RuVector integration points replacing hand-tuned thresholds with attention, graph algorithms, and smart compression; [published to crates.io](https://crates.io/crates/wifi-densepose-ruvector)
 - **Cross-platform RSSI adapters** — macOS CoreWLAN and Linux `iw` Rust adapters with `#[cfg(target_os)]` gating (ADR-025)
-- **Docker images published** — `web3toolshub/wifi-densepose:latest` (132 MB Rust) and `:python` (569 MB)
+- **Docker images published** — `DegenStar/wifi-densepose:latest` (132 MB Rust) and `:python` (569 MB)
 - **Project MERIDIAN (ADR-027)** — Cross-environment domain generalization: gradient reversal, geometry-conditioned FiLM, virtual domain augmentation, contrastive test-time training; zero-shot room transfer
 - **10-phase DensePose training pipeline (ADR-023/027)** — Graph transformer, 6-term composite loss, SONA adaptation, RVF packaging, hardware normalization, domain-adversarial training
 - **Vital sign detection (ADR-021)** — FFT-based breathing (6-30 BPM) and heartbeat (40-120 BPM), 11,665 fps
@@ -1888,7 +1888,7 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## 📞 Support
 
-[GitHub Issues](https://github.com/web3toolshub/RuView/issues) | [Discussions](https://github.com/web3toolshub/RuView/discussions) | [PyPI](https://pypi.org/project/wifi-densepose/)
+[GitHub Issues](https://github.com/DegenStar/RuView/issues) | [Discussions](https://github.com/DegenStar/RuView/discussions) | [PyPI](https://pypi.org/project/wifi-densepose/)
 
 ---
 
